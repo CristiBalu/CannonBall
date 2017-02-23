@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">CannonBall</string>
+    <string name="htp_label">How to play?</string>
+    <string name="author_label">Author</string>
+    <string name="author">650016706</string>
+    <string name="how_to_play">Ala bala portocala</string>
 </resources>
