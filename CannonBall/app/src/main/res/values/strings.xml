@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">CannonBall</string>
+    <string name="app_name">Cannon Ball</string>
+    <string name="first_button_value">Level one</string>
+    <string name="second_button_value">Level two</string>
+    <string name="third_button_value">Level three</string>
+    <string name="fourth_button_value">Level four</string>
+    <string name="fifth_button_value">Level five</string>
 </resources>
