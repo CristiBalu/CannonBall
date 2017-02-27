@@ -7,14 +7,16 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
+
+import java.util.Random;
 
 import coursework.mobile.cannonball.R;
 
 /**
- * Created by crist on 23/02/2017.
+ * Created by 650016706 on 23/02/2017.
  */
 
 public class MainView extends View {
@@ -29,35 +31,52 @@ public class MainView extends View {
     private static final int    INITIAL_TIME = 10;
     private static final int    CANNON_HEIGHT = 350;
     private static final int    CANNON_WIDTH  = 350;
+    private static final double DEFAULT_ANGLE = 0.0F;
 
-    private int screenWidth;
-    private int screenHeight;
     private Integer score;
     private Integer time;
-    Canvas canvas;
+    private double cannonAngle;
+    private double canvasCenterBottomX;
+    private double canvasCenterBottomY;
+    private Bitmap cannonBitmap;
+    private Canvas canvas;
 
     public MainView(Context context) {
         super(context);
-        screenWidth = getWidth();
-        screenHeight = getHeight();
-        score = new Integer(INITIAL_SCORE);
-        time = new Integer(INITIAL_TIME);
+        setupUi();
     }
 
     public MainView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
-        screenWidth = getWidth();
-        screenHeight = getHeight();
-        score = new Integer(INITIAL_SCORE);
-        time = new Integer(INITIAL_TIME);
+        setupUi();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         this.canvas = canvas;
+        canvasCenterBottomX = (double) (canvas.getWidth() / 2);
+        canvasCenterBottomY = (double) canvas.getHeight();
         drawScore();
         drawTime();
         drawCannon();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        switch(e.getAction()) {
+        case MotionEvent.ACTION_UP:
+            final double touchX = e.getX();
+            final double touchY = e.getY();
+            final double m1 = Math.atan((touchX - canvasCenterBottomX) / (touchY - canvasCenterBottomY));
+
+            cannonAngle = -m1 * 180 / Math.PI;
+
+            invalidate();
+            break;
+        default:
+            break;
+        }
+        return true;
     }
 
     public void updateScoreAndTime(Integer time, Integer score) {
@@ -69,26 +88,48 @@ public class MainView extends View {
         Paint paint = new Paint();
         paint.setAntiAlias(false);
         paint.setFilterBitmap(false);
-        Bitmap cannonBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.cannon_transparent);
-        canvas.drawBitmap(Bitmap.createScaledBitmap(cannonBitmap, CANNON_WIDTH, CANNON_HEIGHT, true),
+
+        canvas.drawBitmap(rotatedScaledBitmap(cannonBitmap, cannonAngle, CANNON_WIDTH, CANNON_HEIGHT),
                 (canvas.getWidth() - CANNON_WIDTH) / 2, canvas.getHeight() - CANNON_HEIGHT, paint);
     }
 
     private void drawScore() {
-        Paint paint = new Paint();
-        paint.setColor(TEXT_COLOR);
-        paint.setStyle(Paint.Style.FILL_AND_STROKE);
-        paint.setTextSize(TEXT_SIZE);
+        Paint paint = textPaint();
         canvas.drawText(SCORE_LABEL + score.toString(), SCORE_X + PADDING, SCORE_Y, paint);
     }
 
     private void drawTime() {
+        Paint paint = textPaint();
+        float textWidth = paint.measureText(TIME_LABEL + time.toString()) + PADDING;
+        canvas.drawText(TIME_LABEL + time.toString(), canvas.getWidth() - textWidth, SCORE_Y, paint);
+    }
+
+    private Bitmap rotatedScaledBitmap(Bitmap src, double angle, int width, int height) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate((float)angle);
+
+        return Bitmap.createScaledBitmap(
+                Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true),
+                width, height, true);
+    }
+
+    private void setupUi() {
+        score = new Integer(INITIAL_SCORE);
+        time = new Integer(INITIAL_TIME);
+        cannonAngle = DEFAULT_ANGLE;
+        cannonBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.cannon_transparent);
+        canvas = null;
+        canvasCenterBottomX = 0.0;
+        canvasCenterBottomY = 0.0;
+    }
+
+    private Paint textPaint() {
         Paint paint = new Paint();
         paint.setColor(TEXT_COLOR);
         paint.setStyle(Paint.Style.FILL_AND_STROKE);
         paint.setTextSize(TEXT_SIZE);
-        float textWidth = paint.measureText(TIME_LABEL + time.toString()) + PADDING;
-        canvas.drawText(TIME_LABEL + time.toString(), canvas.getWidth() - textWidth, SCORE_Y, paint);
+
+        return paint;
     }
 
     public Integer getScore() {

@@ -11,4 +11,4 @@
     android:paddingTop="@dimen/no_padding"
     android:paddingBottom="@dimen/no_padding"
     android:background="@color/backgroundColor"
-    tools:context="coursework.mobile.cannonball.GameActivity"/>
+    tools:context="coursework.mobile.cannonball.GameActivity" />
