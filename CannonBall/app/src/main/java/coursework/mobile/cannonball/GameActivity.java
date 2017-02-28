@@ -17,7 +17,7 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game_layout);
 
-        view = (MainView) findViewById(R.id.game_layout);
+        view = new MainView(this);
         model = new GameModel();
         updateScoreBoard();
     }

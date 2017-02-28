@@ -4,35 +4,21 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.util.Random;
-
 import coursework.mobile.cannonball.R;
+
+import static coursework.mobile.cannonball.Constants.*;
 
 /**
  * Created by 650016706 on 23/02/2017.
  */
 
 public class MainView extends View {
-    private static final int    TEXT_COLOR = Color.WHITE;
-    private static final float  TEXT_SIZE = 60.0F;
-    private static final String SCORE_LABEL = "Score: ";
-    private static final String TIME_LABEL = "Time : ";
-    private static final int    SCORE_X = 0;
-    private static final int    SCORE_Y = 100;
-    private static final int    PADDING = 40;
-    private static final int    INITIAL_SCORE = 0;
-    private static final int    INITIAL_TIME = 10;
-    private static final int    CANNON_HEIGHT = 350;
-    private static final int    CANNON_WIDTH  = 350;
-    private static final double DEFAULT_ANGLE = 0.0F;
-
     private Integer score;
     private Integer time;
     private double cannonAngle;
