@@ -19,4 +19,6 @@ public interface Constants {
     int    CANNON_HEIGHT = 350;
     int    CANNON_WIDTH  = 350;
     double DEFAULT_ANGLE = 0.0F;
+    int    BACKGROUND_COLOR = Color.parseColor("#006400");
+    int    BALL_SIZE = 50;
 }
