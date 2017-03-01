@@ -45,6 +45,7 @@ public class MainView extends View {
         drawScore();
         drawTime();
         drawCannon();
+        drawBall();
     }
 
     @Override
@@ -68,6 +69,16 @@ public class MainView extends View {
     public void updateScoreAndTime(Integer time, Integer score) {
         setTime(time);
         setScore(score);
+    }
+
+    private void drawBall() {
+        Paint paint = new Paint();
+        paint.setAntiAlias(false);
+        paint.setFilterBitmap(false);
+
+        Bitmap ball = BitmapFactory.decodeResource(getResources(), R.mipmap.ball);
+
+        canvas.drawBitmap(ball, 200, 200, paint);
     }
 
     private void drawCannon() {
