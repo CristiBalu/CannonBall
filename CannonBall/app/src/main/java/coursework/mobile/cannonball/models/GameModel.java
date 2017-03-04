@@ -1,12 +1,12 @@
 package coursework.mobile.cannonball.models;
 
+import static coursework.mobile.cannonball.Constants.*;
+
 /**
  * Created by 650016706 on 24/02/2017.
  */
 
 public class GameModel {
-    private static final int INITIAL_SCORE = 0;
-    private static final int INITIAL_TIME = 10;
 
     private int score;
     private int time;
@@ -15,7 +15,6 @@ public class GameModel {
         setScore(INITIAL_SCORE);
         setTime(INITIAL_TIME);
     }
-
     public int getScore() {
         return score;
     }

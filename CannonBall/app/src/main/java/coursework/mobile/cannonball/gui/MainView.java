@@ -4,19 +4,18 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 
-import coursework.mobile.cannonball.Constants;
+import java.util.ArrayList;
+
 import coursework.mobile.cannonball.R;
+import coursework.mobile.cannonball.utils.Vector2D;
 
 import static coursework.mobile.cannonball.Constants.*;
 
@@ -30,11 +29,11 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
     private double cannonAngle;
     private double canvasCenterBottomX;
     private double canvasCenterBottomY;
-    private int ballX;
-    private int ballY;
     private Bitmap cannonBitmap;
     private Canvas canvas;
     private StaticThread thread;
+    private ArrayList<BallSprite> balls;
+    private Vector2D spawningPoint;
 
     private class StaticThread extends Thread {
         private boolean running = false;
@@ -48,9 +47,18 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
         public void run() {
             while(isRunning()) {
                 if(holder.getSurface().isValid()) {
-                    Canvas canvas = holder.lockCanvas();
-                    doDraw(canvas);
-                    holder.unlockCanvasAndPost(canvas);
+                    Canvas canvas = null;
+
+                    try{
+                        canvas = holder.lockCanvas();
+                        synchronized (holder){
+                            doDraw(canvas);
+                        }
+                    } finally {
+                        if(canvas != null) {
+                            holder.unlockCanvasAndPost(canvas);
+                        }
+                    }
                 }
             }
         }
@@ -86,11 +94,12 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
 
         canvasCenterBottomX = (double) (canvas.getWidth() / 2);
         canvasCenterBottomY = (double) canvas.getHeight();
+
         drawBackground();
         drawScore();
         drawTime();
         drawCannon();
-        drawBall();
+        drawBalls();
     }
 
     @Override
@@ -102,6 +111,12 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
             final double m1 = Math.atan((touchX - canvasCenterBottomX) / (touchY - canvasCenterBottomY));
 
             cannonAngle = -m1 * 180 / Math.PI;
+
+            balls.add(new BallSprite(spawningPoint, new Vector2D(1.0F, 1.0F)));
+            try {
+                thread.sleep(300);
+            } catch (InterruptedException exeption) {}
+
             break;
         default:
             break;
@@ -114,21 +129,18 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
         setScore(score);
     }
 
+    private void drawBalls() {
+        for(BallSprite ball : balls) {
+            ball.update();
+            ball.draw(canvas);
+        }
+    }
+
     private void drawBackground() {
         Paint paint = new Paint();
         paint.setColor(BACKGROUND_COLOR);
         paint.setStyle(Paint.Style.FILL);
         canvas.drawRect(new Rect(0, 0, canvas.getWidth(), canvas.getHeight()), paint);
-    }
-
-    private void drawBall() {
-        Paint paint = new Paint();
-        paint.setAntiAlias(false);
-        paint.setFilterBitmap(false);
-
-        Bitmap ball = BitmapFactory.decodeResource(getResources(), R.mipmap.ball);
-
-        canvas.drawBitmap(rotatedScaledBitmap(ball, 0.0, BALL_SIZE, BALL_SIZE), ballX, ballY, paint);
     }
 
     private void drawCannon() {
@@ -138,6 +150,8 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
 
         canvas.drawBitmap(rotatedScaledBitmap(cannonBitmap, cannonAngle, CANNON_WIDTH, CANNON_HEIGHT),
                 (canvas.getWidth() - CANNON_WIDTH) / 2, canvas.getHeight() - CANNON_HEIGHT, paint);
+        spawningPoint.setX((canvas.getWidth() - CANNON_WIDTH) / 2);
+        spawningPoint.setY(canvas.getHeight() - CANNON_HEIGHT);
     }
 
     private void drawScore() {
@@ -168,8 +182,8 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
         canvas = null;
         canvasCenterBottomX = 0.0;
         canvasCenterBottomY = 0.0;
-        ballX = 3000;
-        ballY = 3000;
+        balls = new ArrayList<>();
+        spawningPoint = new Vector2D(0.0F, 0.0F);
     }
 
     private Paint textPaint() {
