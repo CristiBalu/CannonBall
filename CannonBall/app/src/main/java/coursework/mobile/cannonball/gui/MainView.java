@@ -13,6 +13,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import coursework.mobile.cannonball.R;
 import coursework.mobile.cannonball.utils.Vector2D;
@@ -32,11 +33,10 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
     private Bitmap cannonBitmap;
     private Canvas canvas;
     private StaticThread thread;
-    private ArrayList<BallSprite> balls;
-    private Vector2D spawningPoint;
+    private CopyOnWriteArrayList<BallSprite> balls;
 
     private class StaticThread extends Thread {
-        private boolean running = false;
+        boolean running = false;
         private SurfaceHolder holder;
 
         public StaticThread(SurfaceHolder holder) {
@@ -48,14 +48,14 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
             while(isRunning()) {
                 if(holder.getSurface().isValid()) {
                     Canvas canvas = null;
-
-                    try{
+                    updateBalls();
+                    try {
                         canvas = holder.lockCanvas();
-                        synchronized (holder){
-                            doDraw(canvas);
+                        synchronized (holder) {
+                            postInvalidate();
                         }
                     } finally {
-                        if(canvas != null) {
+                        if (canvas != null) {
                             holder.unlockCanvasAndPost(canvas);
                         }
                     }
@@ -89,7 +89,8 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
         setupUi();
     }
 
-    protected void doDraw(Canvas canvas) {
+    @Override
+    protected void onDraw(Canvas canvas) {
         this.canvas = canvas;
 
         canvasCenterBottomX = (double) (canvas.getWidth() / 2);
@@ -112,10 +113,9 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
 
             cannonAngle = -m1 * 180 / Math.PI;
 
-            balls.add(new BallSprite(spawningPoint, new Vector2D(1.0F, 1.0F)));
-            try {
-                thread.sleep(300);
-            } catch (InterruptedException exeption) {}
+            final double velX = 30.0 * Math.sin(-m1);
+            final double velY = -30.0 * Math.cos(-m1);
+            balls.add(new BallSprite(new Vector2D((float)canvasCenterBottomX, (float)canvasCenterBottomY), new Vector2D((float) velX,(float)velY)));
 
             break;
         default:
@@ -129,12 +129,19 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
         setScore(score);
     }
 
-    private void drawBalls() {
-        for(BallSprite ball : balls) {
-            ball.update();
-            ball.draw(canvas);
+    private void updateBalls() {
+        for(int i = 0; i < balls.size(); i++) {
+            balls.get(i).update();
+            System.out.println("Dupa update: " + balls.get(i).getPosition().getX() + " " + balls.get(i).getPosition().getY());
         }
     }
+
+    private void drawBalls() {
+        for(int i = 0; i < balls.size(); i++) {
+            balls.get(i).draw(canvas);
+        }
+    }
+
 
     private void drawBackground() {
         Paint paint = new Paint();
@@ -150,8 +157,6 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
 
         canvas.drawBitmap(rotatedScaledBitmap(cannonBitmap, cannonAngle, CANNON_WIDTH, CANNON_HEIGHT),
                 (canvas.getWidth() - CANNON_WIDTH) / 2, canvas.getHeight() - CANNON_HEIGHT, paint);
-        spawningPoint.setX((canvas.getWidth() - CANNON_WIDTH) / 2);
-        spawningPoint.setY(canvas.getHeight() - CANNON_HEIGHT);
     }
 
     private void drawScore() {
@@ -182,8 +187,7 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
         canvas = null;
         canvasCenterBottomX = 0.0;
         canvasCenterBottomY = 0.0;
-        balls = new ArrayList<>();
-        spawningPoint = new Vector2D(0.0F, 0.0F);
+        balls = new CopyOnWriteArrayList<>();
     }
 
     private Paint textPaint() {
@@ -213,6 +217,7 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        setWillNotDraw(false);
         thread = new StaticThread(holder);
         thread.setRunning(true);
         thread.start();

@@ -22,7 +22,10 @@ public class BallSprite {
     }
 
     public void update() {
+        System.out.println(position.getX() + " " + position.getY());
         position.add(velocity);
+        System.out.println(position.getX() + " " + position.getY());
+        System.out.println("fmm");
     }
 
     public void draw(Canvas canvas) {
