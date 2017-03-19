@@ -13,6 +13,9 @@ public class GameModel {
     private float  ballSize;
     private double ballVelX;
     private double ballVelY;
+    private int    level;
+    private int    targetWidth;
+    private int    targetHeight;
 
     public GameModel() {
         setScore(INITIAL_SCORE);
@@ -20,6 +23,7 @@ public class GameModel {
         setBallSize(BALL_SIZE);
         setBallVelX(BALL_VEL_X);
         setBallVelY(BALL_VEL_Y);
+        setLevel(1);
     }
     public int getScore() {
         return score;
@@ -59,5 +63,29 @@ public class GameModel {
 
     public void setBallVelY(double ballVelY) {
         this.ballVelY = ballVelY;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public int getTargetWidth() {
+        return targetWidth;
+    }
+
+    public void setTargetWidth(int targetWidth) {
+        this.targetWidth = targetWidth;
+    }
+
+    public int getTargetHeight() {
+        return targetHeight;
+    }
+
+    public void setTargetHeight(int targetHeight) {
+        this.targetHeight = targetHeight;
     }
 }

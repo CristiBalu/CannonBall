@@ -20,7 +20,15 @@ public interface Constants {
     int    CANNON_WIDTH  = 350;
     double DEFAULT_ANGLE = 0.0F;
     int    BACKGROUND_COLOR = Color.parseColor("#006400");
-    float  BALL_SIZE = 50.0F;
-    double BALL_VEL_X = 30.0;
-    double BALL_VEL_Y = -30.0F;
+    int    TARGET_COLOR = Color.YELLOW;
+    float  BALL_SIZE = 40.0F;
+    double BALL_VEL_X = 45.0;
+    double BALL_VEL_Y = -45.0F;
+    int    TARGET_PIECE_BORDER = 5;
+    int    TARGET_WIDTH = 350;
+    int    TARGET_HEIGHT = 80;
+    float  BASE_TARGET_SPEED = 10.0F;
+    float  TARGET_Y = 150.0F;
+    float  TARGET_INITIAL_X = 16.0F;
+    float  LEVEL_SPEED_ADD = 2.0F;
 }
