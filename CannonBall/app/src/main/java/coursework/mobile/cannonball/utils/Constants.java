@@ -31,4 +31,5 @@ public interface Constants {
     float  TARGET_Y = 150.0F;
     float  TARGET_INITIAL_X = 16.0F;
     float  LEVEL_SPEED_ADD = 2.0F;
+    float  BLOCKER_Y = 300.0F;
 }

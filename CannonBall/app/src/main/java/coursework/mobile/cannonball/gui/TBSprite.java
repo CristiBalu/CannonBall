@@ -14,13 +14,15 @@ import static coursework.mobile.cannonball.utils.Constants.TARGET_PIECE_BORDER;
  * Created by crist on 19/03/2017.
  */
 
-public class TargetSprite {
+public class TBSprite {
     private Vector2D position;
     private Vector2D velocity;
+    private boolean  isBlocker;
 
-    public TargetSprite(Vector2D position, Vector2D velocity) {
+    public TBSprite(Vector2D position, Vector2D velocity, boolean isBlocker) {
         setPosition(position);
         setVelocity(velocity);
+        this.isBlocker = isBlocker;
     }
 
     public void update() {
@@ -30,8 +32,8 @@ public class TargetSprite {
     public void draw(Canvas canvas, int level, int y, int width, int height) {
         int currX = (int)position.getX();
 
-        for(int i = 0; i < level * 2; i++) {
-            drawTargetPiece(canvas, currX, y, width / (level * 2), height);
+        for(int i = 0; i < (isBlocker ? 1 : level * 2); i++) {
+            drawTargetPiece(canvas, currX, y, isBlocker ? width : width / (level * 2), height);
             currX += width / (level * 2);
         }
     }
@@ -42,7 +44,7 @@ public class TargetSprite {
         paint.setStyle(Paint.Style.FILL);
         canvas.drawRect(new Rect(x, y, x + width, y + height), paint);
 
-        paint.setColor(TARGET_COLOR);
+        paint.setColor(isBlocker ? Color.RED : TARGET_COLOR);
         paint.setStyle(Paint.Style.FILL);
         canvas.drawRect(new Rect(x + TARGET_PIECE_BORDER, y + TARGET_PIECE_BORDER,
                         x + width - TARGET_PIECE_BORDER, y + height - TARGET_PIECE_BORDER),

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -34,7 +33,8 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
     private double canvasCenterBottomX;
     private double canvasCenterBottomY;
     private Bitmap cannonBitmap;
-    private TargetSprite targetSprite;
+    private TBSprite targetSprite;
+    private TBSprite blockerSprite;
     private Canvas canvas;
     private StaticThread thread;
     private CopyOnWriteArrayList<BallSprite> balls;
@@ -58,7 +58,12 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
                         targetSprite.invertVelocityX();
                     }
 
+                    if(blockerNearEdge()) {
+                        blockerSprite.invertVelocityX();
+                    }
+
                     targetSprite.update();
+                    blockerSprite.update();
                     try {
                         canvas = holder.lockCanvas();
                         synchronized (holder) {
@@ -111,7 +116,8 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
         drawTime();
         drawCannon();
         drawBalls();
-        targetSprite.draw(canvas, model.getLevel(), 150, TARGET_WIDTH, TARGET_HEIGHT);
+        targetSprite.draw(canvas, model.getLevel(), (int) TARGET_Y, TARGET_WIDTH, TARGET_HEIGHT);
+        blockerSprite.draw(canvas, model.getLevel(), (int) BLOCKER_Y, TARGET_WIDTH, TARGET_HEIGHT);
     }
 
     @Override
@@ -148,10 +154,18 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
         return false;
     }
 
+    private boolean blockerNearEdge() {
+        if (canvas != null)
+            return ((canvas.getWidth() - (int) blockerSprite.getPosition().getX() - TARGET_WIDTH) < 15) ||
+                    (((int) blockerSprite.getPosition().getX()) < 15);
+        return false;
+    }
+
     private void updateElements() {
         this.score = model.getScore();
         this.time  = model.getTime();
         targetSprite.getVelocity().add(new Vector2D(model.getLevel() * LEVEL_SPEED_ADD, 0.0F));
+        blockerSprite.getVelocity().add(new Vector2D(model.getLevel() * LEVEL_SPEED_ADD, 0.0F));
     }
 
     private void updateBalls() {
@@ -207,8 +221,10 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
         time = new Integer(INITIAL_TIME);
         cannonAngle = DEFAULT_ANGLE;
         cannonBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.cannon_transparent);
-        targetSprite = new TargetSprite(new Vector2D(TARGET_INITIAL_X, TARGET_Y),
-                                        new Vector2D(BASE_TARGET_SPEED, 0.0F));
+        targetSprite = new TBSprite(new Vector2D(TARGET_INITIAL_X, TARGET_Y),
+                                    new Vector2D(BASE_TARGET_SPEED, 0.0F), false);
+        blockerSprite = new TBSprite(new Vector2D(500.0F, BLOCKER_Y),
+                                     new Vector2D(BASE_TARGET_SPEED, 0.0F), true);
         canvas = null;
         canvasCenterBottomX = 0.0;
         canvasCenterBottomY = 0.0;
