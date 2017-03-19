@@ -1,4 +1,4 @@
-package coursework.mobile.cannonball;
+package coursework.mobile.cannonball.controllers;
 
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
@@ -19,12 +19,12 @@ public class GameActivity extends AppCompatActivity {
 
         view = new MainView(this);
         model = new GameModel();
+        updateView();
 
         setContentView(view);
-        updateScoreBoard();
     }
 
-    private void updateScoreBoard() {
-        view.updateScoreAndTime(model.getTime(), model.getScore());
+    private void updateView() {
+        view.setModel(model);
     }
 }

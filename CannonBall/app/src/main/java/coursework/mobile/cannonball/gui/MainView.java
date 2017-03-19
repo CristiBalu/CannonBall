@@ -12,19 +12,21 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import coursework.mobile.cannonball.R;
+import coursework.mobile.cannonball.models.GameModel;
 import coursework.mobile.cannonball.utils.Vector2D;
 
-import static coursework.mobile.cannonball.Constants.*;
+import static coursework.mobile.cannonball.utils.Constants.*;
 
 /**
  * Created by 650016706 on 23/02/2017.
  */
 
 public class MainView extends SurfaceView implements SurfaceHolder.Callback {
+
+    private GameModel model;
     private Integer score;
     private Integer time;
     private double cannonAngle;
@@ -113,9 +115,10 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
 
             cannonAngle = -m1 * 180 / Math.PI;
 
-            final double velX = 30.0 * Math.sin(-m1);
-            final double velY = -30.0 * Math.cos(-m1);
-            balls.add(new BallSprite(new Vector2D((float)canvasCenterBottomX, (float)canvasCenterBottomY), new Vector2D((float) velX,(float)velY)));
+            final double velX = model.getBallVelX() * Math.sin(-m1);
+            final double velY = model.getBallVelY() * Math.cos(-m1);
+            balls.add(new BallSprite(new Vector2D((float)canvasCenterBottomX, (float)canvasCenterBottomY),
+                                     new Vector2D((float) velX,(float)velY)));
 
             break;
         default:
@@ -124,21 +127,25 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
         return true;
     }
 
-    public void updateScoreAndTime(Integer time, Integer score) {
-        setTime(time);
-        setScore(score);
+    public void setModel(GameModel model) {
+        this.model = model;
+        updateElements();
+    }
+
+    private void updateElements() {
+        this.score = model.getScore();
+        this.time  = model.getTime();
     }
 
     private void updateBalls() {
         for(int i = 0; i < balls.size(); i++) {
             balls.get(i).update();
-            System.out.println("Dupa update: " + balls.get(i).getPosition().getX() + " " + balls.get(i).getPosition().getY());
         }
     }
 
     private void drawBalls() {
         for(int i = 0; i < balls.size(); i++) {
-            balls.get(i).draw(canvas);
+            balls.get(i).draw(canvas, model.getBallSize());
         }
     }
 
@@ -198,23 +205,6 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
 
         return paint;
     }
-
-    public Integer getScore() {
-        return score;
-    }
-
-    public void setScore(Integer score) {
-        this.score = score;
-    }
-
-    public Integer getTime() {
-        return time;
-    }
-
-    public void setTime(Integer time) {
-        this.time = time;
-    }
-
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         setWillNotDraw(false);

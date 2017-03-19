@@ -6,7 +6,7 @@ import android.graphics.Paint;
 
 import coursework.mobile.cannonball.utils.Vector2D;
 
-import static coursework.mobile.cannonball.Constants.*;
+import static coursework.mobile.cannonball.utils.Constants.*;
 
 /**
  * Created by 650016706 on 02/03/2017.
@@ -22,17 +22,14 @@ public class BallSprite {
     }
 
     public void update() {
-        System.out.println(position.getX() + " " + position.getY());
         position.add(velocity);
-        System.out.println(position.getX() + " " + position.getY());
-        System.out.println("fmm");
     }
 
-    public void draw(Canvas canvas) {
+    public void draw(Canvas canvas, float ballSize) {
         Paint paint = new Paint();
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.FILL);
-        canvas.drawCircle(position.getX(), position.getY(), BALL_SIZE, paint);
+        canvas.drawCircle(position.getX(), position.getY(), ballSize, paint);
     }
 
     public Vector2D getPosition() {

@@ -1,4 +1,4 @@
-package coursework.mobile.cannonball;
+package coursework.mobile.cannonball.controllers;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

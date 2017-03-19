@@ -1,4 +1,4 @@
-package coursework.mobile.cannonball;
+package coursework.mobile.cannonball.utils;
 
 import android.graphics.Color;
 
@@ -21,4 +21,6 @@ public interface Constants {
     double DEFAULT_ANGLE = 0.0F;
     int    BACKGROUND_COLOR = Color.parseColor("#006400");
     float  BALL_SIZE = 50.0F;
+    double BALL_VEL_X = 30.0;
+    double BALL_VEL_Y = -30.0F;
 }
